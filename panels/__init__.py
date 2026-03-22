@@ -1,3 +1,5 @@
+import bpy
+from bpy.props import StringProperty, FloatProperty, EnumProperty
 from .sidebar import SomataPanel, SomataAssetsPanel
 
 classes = (
@@ -7,16 +9,48 @@ classes = (
 
 
 def register():
-    import bpy
     from ..operators.generate_body import register_scene_props
     register_scene_props()
+    _register_upload_props()
     for cls in classes:
         bpy.utils.register_class(cls)
 
 
 def unregister():
-    import bpy
     from ..operators.generate_body import unregister_scene_props
     for cls in reversed(classes):
         bpy.utils.unregister_class(cls)
     unregister_scene_props()
+    _unregister_upload_props()
+
+
+def _register_upload_props():
+    bpy.types.Scene.somata_upload_name = StringProperty(
+        name="Name",
+        description="Asset name in Somata",
+        default="",
+    )
+    bpy.types.Scene.somata_upload_height = FloatProperty(
+        name="Height (cm)",
+        default=170.0,
+        min=100.0,
+        max=250.0,
+    )
+    bpy.types.Scene.somata_upload_weight = FloatProperty(
+        name="Weight (kg)",
+        default=65.0,
+        min=30.0,
+        max=200.0,
+    )
+    bpy.types.Scene.somata_upload_gender = EnumProperty(
+        name="Gender",
+        items=[("male", "Male", ""), ("female", "Female", "")],
+        default="female",
+    )
+
+
+def _unregister_upload_props():
+    del bpy.types.Scene.somata_upload_name
+    del bpy.types.Scene.somata_upload_height
+    del bpy.types.Scene.somata_upload_weight
+    del bpy.types.Scene.somata_upload_gender

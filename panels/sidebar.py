@@ -1,7 +1,15 @@
 import bpy
-
+from ..operators.assets import get_cache
 
 PKG = __package__.split(".")[0]  # "somata_blender"
+
+STATUS_ICONS = {
+    "READY": "CHECKMARK",
+    "PROCESSING": "SORTTIME",
+    "SIGNING": "SORTTIME",
+    "PENDING": "SORTTIME",
+    "FAILED": "ERROR",
+}
 
 
 def _prefs(context):
@@ -9,7 +17,7 @@ def _prefs(context):
 
 
 class SomataPanel(bpy.types.Panel):
-    """Main Somata panel — login status, credits, and creation actions."""
+    """Main Somata panel — login, upload settings, and creation actions."""
 
     bl_label = "Somata"
     bl_idname = "VIEW3D_PT_somata"
@@ -20,6 +28,7 @@ class SomataPanel(bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
         prefs = _prefs(context)
+        scene = context.scene
 
         # ── Auth state ───────────────────────────────────────────────────────
         if not prefs.token:
@@ -34,7 +43,16 @@ class SomataPanel(bpy.types.Panel):
         # ── Upload Photo ─────────────────────────────────────────────────────
         box = layout.box()
         box.label(text="From Photo", icon="IMAGE_DATA")
-        box.operator("somata.upload_photo", icon="IMPORT")
+
+        col = box.column(align=True)
+        col.prop(scene, "somata_upload_name")
+        col.prop(scene, "somata_upload_gender")
+
+        row = box.row(align=True)
+        row.prop(scene, "somata_upload_height")
+        row.prop(scene, "somata_upload_weight")
+
+        box.operator("somata.upload_photo", icon="FILEBROWSER")
 
         layout.separator()
 
@@ -42,13 +60,11 @@ class SomataPanel(bpy.types.Panel):
         box = layout.box()
         box.label(text="From Measurements", icon="ARMATURE_DATA")
 
-        preview_token = getattr(context.scene, "somata_preview_token", "")
-        preview_url = getattr(context.scene, "somata_preview_url", "")
+        preview_token = scene.somata_preview_token
+        preview_url = scene.somata_preview_url
 
         if preview_token:
-            box.label(text="Preview ready", icon="CHECKMARK")
-            if preview_url:
-                box.label(text=preview_url[:48] + "…" if len(preview_url) > 48 else preview_url)
+            box.label(text="Preview ready — confirm to generate mesh", icon="CHECKMARK")
             box.operator("somata.generate_body", icon="MESH_MONKEY")
             box.operator("somata.preview_body", text="Regenerate Preview", icon="FILE_REFRESH")
         else:
@@ -56,7 +72,7 @@ class SomataPanel(bpy.types.Panel):
 
 
 class SomataAssetsPanel(bpy.types.Panel):
-    """Asset library — list READY assets and import them."""
+    """Asset library — list assets, show status, and import READY meshes."""
 
     bl_label = "My Assets"
     bl_idname = "VIEW3D_PT_somata_assets"
@@ -72,18 +88,23 @@ class SomataAssetsPanel(bpy.types.Panel):
 
     def draw(self, context):
         layout = self.layout
-        assets = getattr(context.scene, "somata_assets_cache", [])
+        assets = get_cache()
+
+        layout.operator("somata.refresh_assets", icon="FILE_REFRESH",
+                        text="Refresh" if assets else "Load Assets")
 
         if not assets:
-            layout.label(text="No assets loaded yet.")
-            layout.operator("somata.refresh_assets", icon="FILE_REFRESH")
+            layout.label(text="No assets yet.", icon="INFO")
             return
 
+        layout.separator()
         for asset in assets:
-            row = layout.row(align=True)
             status = asset.get("status", "?")
-            icon = "CHECKMARK" if status == "READY" else "SORTTIME"
-            row.label(text=asset.get("name", "Unnamed"), icon=icon)
+            icon = STATUS_ICONS.get(status, "QUESTION")
+
+            row = layout.row(align=True)
+            row.label(text=asset.get("name", "Unnamed")[:28], icon=icon)
+            row.label(text=status)
             if status == "READY":
                 op = row.operator("somata.download_mesh", text="", icon="IMPORT")
                 op.asset_id = asset["id"]
