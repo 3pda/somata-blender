@@ -4,10 +4,9 @@ Generate and import photorealistic digital human meshes from inside Blender via 
 
 ## Features
 
-- **Upload Reference Photo** — upload a JPEG/PNG and generate a mesh from a real likeness
-- **Generate from Measurements** — specify gender, height, and weight; get a free A-pose preview, then confirm to generate the full FBX (costs 1 credit)
+- **Upload Reference Photo** — upload a JPEG/PNG with name, gender, height, and weight; generates a mesh from a real likeness
 - **Import Mesh** — download a READY asset's FBX directly into the current scene
-- **My Assets** — browse your asset library from the N-panel
+- **My Assets** — browse your asset library from the N-panel; refresh on demand
 
 ## Requirements
 
@@ -40,14 +39,14 @@ make zip
 ## Usage
 
 ### Upload a photo
-1. Click **Upload Reference Photo** in the Somata panel
-2. Select a JPEG/PNG file, enter name + measurements
+1. In the **Somata** panel, fill in **Name**, **Gender**, **Height (cm)**, and **Weight (kg)**
+2. Click **Pick Photo…** and select a JPEG/PNG reference image
 3. The mesh generates in the background — check **My Assets** for status
 
-### Generate from measurements
-1. Click **Generate Preview** — free, no credit used
-2. Review the preview URL, then click **Generate Mesh (1 credit)**
-3. Once READY, click **Import Mesh** in **My Assets**
+### Import a mesh
+1. In **My Assets**, click **Refresh** (or **Load Assets**) to fetch your library
+2. Once an asset shows **READY**, click the **Import** button next to it
+3. The FBX is downloaded and imported into the current scene
 
 ## Development
 
