@@ -9,18 +9,14 @@ classes = (
 
 
 def register():
-    from ..operators.generate_body import register_scene_props
-    register_scene_props()
     _register_upload_props()
     for cls in classes:
         bpy.utils.register_class(cls)
 
 
 def unregister():
-    from ..operators.generate_body import unregister_scene_props
     for cls in reversed(classes):
         bpy.utils.unregister_class(cls)
-    unregister_scene_props()
     _unregister_upload_props()
 
 

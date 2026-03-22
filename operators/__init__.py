@@ -1,6 +1,5 @@
 from .auth import SomataLogin, SomataLogout
 from .upload_photo import SomataUploadPhoto
-from .generate_body import SomataPreviewBody, SomataGenerateBody
 from .download_mesh import SomataDownloadMesh
 from .assets import SomataRefreshAssets
 
@@ -8,8 +7,6 @@ classes = (
     SomataLogin,
     SomataLogout,
     SomataUploadPhoto,
-    SomataPreviewBody,
-    SomataGenerateBody,
     SomataDownloadMesh,
     SomataRefreshAssets,
 )

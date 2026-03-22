@@ -54,21 +54,6 @@ class SomataPanel(bpy.types.Panel):
 
         box.operator("somata.upload_photo", icon="FILEBROWSER")
 
-        layout.separator()
-
-        # ── Generate Body ────────────────────────────────────────────────────
-        box = layout.box()
-        box.label(text="From Measurements", icon="ARMATURE_DATA")
-
-        preview_token = scene.somata_preview_token
-        preview_url = scene.somata_preview_url
-
-        if preview_token:
-            box.label(text="Preview ready — confirm to generate mesh", icon="CHECKMARK")
-            box.operator("somata.generate_body", icon="MESH_MONKEY")
-            box.operator("somata.preview_body", text="Regenerate Preview", icon="FILE_REFRESH")
-        else:
-            box.operator("somata.preview_body", icon="RENDER_STILL")
 
 
 class SomataAssetsPanel(bpy.types.Panel):
